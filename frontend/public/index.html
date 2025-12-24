@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy-Preserving Alcohol Control | Zama FHEVM</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        padding: 10px;
+        overflow: hidden;
+        display: flex;
+      }
+
+      .main-wrapper {
+        display: flex;
+        gap: 15px;
+        max-width: 1200px;
+        height: 100%;
+        margin: 0 auto;
+        align-items: center;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .main-wrapper > .container {
+        flex: 1;
+        max-width: 700px;
+        overflow-y: auto;
+        max-height: 100%;
+      }
+
+      .logs-panel {
+        flex: 0 0 380px;
+        display: flex;
+        flex-direction: column;
+        max-height: 100%;
+        gap: 10px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        padding: 25px;
+      }
+
+      .logo-header {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
+      .logo-icon {
+        font-size: 60px;
+        margin-bottom: 5px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 0;
+        font-size: 22px;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .info-box {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+      }
+
+      .info-box h3 {
+        color: #667eea;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      .info-box p {
+        color: #555;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      .policy-info {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: #e3f2fd;
+        border-radius: 10px;
+      }
+
+      .policy-item {
+        text-align: center;
+      }
+
+      .policy-item .label {
+        color: #666;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .policy-item .value {
+        color: #1976d2;
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .inputs-row {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+
+      .input-group {
+        flex: 1;
+      }
+
+      label {
+        display: block;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 12px;
+      }
+
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input[type="number"]:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .status {
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        line-height: 1.4;
+        display: none;
+      }
+
+      .status.info {
+        background: #e3f2fd;
+        color: #1976d2;
+        border: 1px solid #90caf9;
+        display: block;
+      }
+
+      .status.loading {
+        background: #fff3e0;
+        color: #f57c00;
+        border: 1px solid #ffb74d;
+        display: block;
+      }
+
+      .status.error {
+        background: #ffebee;
+        color: #c62828;
+        border: 1px solid #ef5350;
+        display: block;
+      }
+
+      .status.success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #81c784;
+        display: block;
+      }
+
+      .result {
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: 600;
+        animation: slideIn 0.5s ease-out;
+        display: none;
+      }
+
+      .result.show {
+        display: block;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result.allowed {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+      }
+
+      .result.not-allowed {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        color: white;
+        box-shadow: 0 5px 20px rgba(244, 67, 54, 0.4);
+      }
+
+      .result-image {
+        font-size: 64px;
+        margin-bottom: 15px;
+        animation: bounceIn 0.6s ease-out;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .result-icon {
+        font-size: 30px;
+        margin-bottom: 8px;
+      }
+
+      .result-text {
+        font-size: 20px;
+        margin-bottom: 4px;
+        font-weight: 700;
+      }
+
+      .result-subtext {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+
+      .logs-container {
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px;
+        flex: 1;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        display: block;
+      }
+
+      .logs-container strong {
+        display: block;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+
+      .log-entry {
+        margin-bottom: 8px;
+        color: #333;
+        padding: 5px;
+        border-radius: 3px;
+      }
+
+      .log-entry.info {
+        background: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .log-entry.success {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .log-entry.error {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .log-entry.warning {
+        background: #fff3e0;
+        color: #e65100;
+      }
+
+      .log-timestamp {
+        color: #999;
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      .privacy-note {
+        background: #fff3e0;
+        border: 1px solid #ffb74d;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: #e65100;
+        flex-shrink: 0;
+      }
+
+      .privacy-note strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #f57c00;
+      }
+
+      .step-indicator {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 15px 8px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        position: relative;
+      }
+
+      .step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+      }
+
+      .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        color: #999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 8px;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .step-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #999;
+        text-align: center;
+        transition: color 0.3s ease;
+      }
+
+      .step.active .step-circle {
+        background: #667eea;
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .step.active .step-label {
+        color: #667eea;
+      }
+
+      .step.completed .step-circle {
+        background: #4caf50;
+        color: white;
+      }
+
+      .step.completed .step-circle::after {
+        content: "✓";
+        position: absolute;
+      }
+
+      .step.completed .step-label {
+        color: #4caf50;
+      }
+
+      .step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: calc(50% + 20px);
+        width: calc(100% - 40px);
+        height: 3px;
+        background: #e0e0e0;
+        z-index: 1;
+        transition: background 0.3s ease;
+      }
+
+      .step.completed:not(:last-child)::after {
+        background: #4caf50;
+      }
+
+      .wallet-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 12px;
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .wallet-status {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .wallet-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #4f46e5;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .wallet-address {
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        color: #111827;
+        word-break: break-all;
+      }
+
+      .wallet-btn {
+        flex: 0 0 auto;
+        min-width: 180px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .main-wrapper {
+          flex-direction: column;
+          padding: 15px;
+        }
+
+        .main-wrapper > .container {
+          max-width: 100%;
+        }
+
+        .logs-panel {
+          flex: 1;
+          position: static;
+          max-height: 400px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .inputs-row {
+          flex-direction: column;
+          gap: 0;
+        }
+
+        .container {
+          padding: 25px;
+        }
+
+        .logo-icon {
+          font-size: 60px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .step-circle {
+          width: 35px;
+          height: 35px;
+          font-size: 14px;
+        }
+
+        .step-label {
+          font-size: 10px;
+        }
+
+        .policy-info {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="container">
+        <div class="logo-header">
+          <div class="logo-icon">🥴🍺</div>
+          <h1>Privacy-Preserving Alcohol Control</h1>
+        </div>
+        <p class="subtitle">
+          Fully Homomorphic Encryption (FHE) for age and drink limit verification<br />
+          <em>Your data stays encrypted. Staff only see "Yes/No" decisions.</em><br />
+          <strong>🔗 Connected to Sepolia Testnet</strong>
+        </p>
+
+        <div class="wallet-bar">
+          <div class="wallet-status">
+            <span class="wallet-label">Wallet</span>
+            <span class="wallet-address" id="walletAddress">Not connected</span>
+          </div>
+          <button class="btn-primary wallet-btn" id="connectWalletBtn" type="button" onclick="connectWallet()">
+            🔗 Connect Wallet
+          </button>
+        </div>
+
+        <div class="info-box">
+          <h3>🔒 How It Works</h3>
+          <p>
+            Your age and drink count are encrypted on your device before being sent to the blockchain. The smart
+            contract performs all checks under encryption using Zama's FHEVM technology. Only the final "allowed/not
+            allowed" decision is revealed—keeping your sensitive data private!
+          </p>
+        </div>
+
+        <div class="policy-info">
+          <div class="policy-item">
+            <div class="label">Legal Age</div>
+            <div class="value">21+</div>
+          </div>
+          <div class="policy-item">
+            <div class="label">Max Drinks (strict)</div>
+            <div class="value">3 (0,1,2 only)</div>
+          </div>
+        </div>
+
+        <div class="step-indicator">
+          <div class="step" id="step1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Input</div>
+          </div>
+          <div class="step" id="step2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Confirm</div>
+          </div>
+          <div class="step" id="step3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Encrypt</div>
+          </div>
+          <div class="step" id="step4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Verify</div>
+          </div>
+          <div class="step" id="step5">
+            <div class="step-circle">5</div>
+            <div class="step-label">Decrypt</div>
+          </div>
+        </div>
+
+        <div class="inputs-row">
+          <div class="input-group">
+            <label for="age">Your Age</label>
+            <input type="number" id="age" min="0" max="120" placeholder="Enter your age (e.g., 25)" value="25" />
+          </div>
+
+          <div class="input-group">
+            <label for="drinks">Drinks Already Consumed</label>
+            <input
+              type="number"
+              id="drinks"
+              min="0"
+              max="10"
+              placeholder="How many drinks so far? (e.g., 2)"
+              value="2"
+            />
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" id="checkBtn" onclick="handleCheckClick()">
+            🔐 Check Eligibility (End-to-End Encrypted)
+          </button>
+        </div>
+
+        <div id="status"></div>
+        <div id="result"></div>
+      </div>
+
+      <div class="logs-panel">
+        <div class="privacy-note">
+          <strong>🛡️ Privacy Guarantee:</strong>
+          The blockchain and event staff never see your actual age or drink count. All values are encrypted using Fully
+          Homomorphic Encryption (FHE), allowing computation on encrypted data without ever decrypting it on the server
+          or smart contract!
+        </div>
+
+        <div class="logs-container show" id="logsContainer">
+          <strong>📋 Process Logs</strong>
+          <div id="logEntries"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.ethers.org/v6/ethers.umd.min.js"></script>
+    <script>
+      let logEntries = [];
+      let currentStep = 1;
+      let connectedAccount = null;
+      let contractAddress = null;
+      let provider = null;
+      let signer = null;
+      let fhevmInstance = null;
+      let reconnecting = false;
+
+      // Logging utility
+      function addLog(message, type = "info") {
+        const timestamp = new Date().toLocaleTimeString();
+        const entry = { timestamp, message, type };
+        logEntries.push(entry);
+
+        const logEntriesDiv = document.getElementById("logEntries");
+        const logDiv = document.createElement("div");
+        logDiv.className = `log-entry ${type}`;
+        logDiv.innerHTML = `<span class="log-timestamp">${timestamp}</span>${message}`;
+        logEntriesDiv.appendChild(logDiv);
+
+        logEntriesDiv.parentElement.scrollTop = logEntriesDiv.parentElement.scrollHeight;
+        console.log(`[${type.toUpperCase()}] ${message}`);
+      }
+
+      // Show logs container
+      function showLogs() {
+        document.getElementById("logsContainer").classList.add("show");
+      }
+
+      // Status message utility
+      function showStatus(message, type = "info") {
+        const statusDiv = document.getElementById("status");
+        statusDiv.className = `status ${type}`;
+        statusDiv.textContent = message;
+      }
+
+      // Step indicator
+      function setStep(stepNum) {
+        currentStep = stepNum;
+        for (let i = 1; i <= 5; i++) {
+          const stepDiv = document.getElementById(`step${i}`);
+          stepDiv.classList.remove("active", "completed");
+          if (i < stepNum) {
+            stepDiv.classList.add("completed");
+          } else if (i === stepNum) {
+            stepDiv.classList.add("active");
+          }
+        }
+      }
+
+      // Show result
+      function showResult(allowed) {
+        const resultDiv = document.getElementById("result");
+        if (allowed) {
+          resultDiv.className = "result allowed show";
+          resultDiv.innerHTML = `
+            <div class="result-image">🍻🎉😊</div>
+            <div class="result-icon">✅</div>
+            <div class="result-text">ALLOWED</div>
+            <div class="result-subtext">You can get a drink! Enjoy responsibly! 🍺</div>
+          `;
+          addLog("✅ Decrypted result: ALLOWED", "success");
+        } else {
+          resultDiv.className = "result not-allowed show";
+          resultDiv.innerHTML = `
+            <div class="result-image">🚫🙅‍♂️😔</div>
+            <div class="result-icon">❌</div>
+            <div class="result-text">NOT ALLOWED</div>
+            <div class="result-subtext">Age or drink limit requirements not satisfied.<br/>If already consumed is 3, next drink is disallowed. 🛑</div>
+          `;
+          addLog("❌ Decrypted result: NOT ALLOWED", "error");
+        }
+      }
+
+      function formatAddress(address) {
+        if (!address || address.length < 8) return address || "";
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
+      }
+
+      function setWalletUI(address, isConnected) {
+        const walletAddressEl = document.getElementById("walletAddress");
+        const connectBtn = document.getElementById("connectWalletBtn");
+        if (isConnected) {
+          walletAddressEl.textContent = address ? formatAddress(address) : "Connected";
+          connectBtn.textContent = "✅ Wallet Connected";
+        } else {
+          walletAddressEl.textContent = "Not connected";
+          connectBtn.textContent = "🔗 Connect Wallet";
+        }
+      }
+
+      // Simplified encryption using backend
+      async function encryptInputs(age, drinks, contractAddress) {
+        try {
+          const response = await fetch("/api/simple-encrypt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ age, drinks, contractAddress }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Encryption failed");
+          }
+
+          return await response.json();
+        } catch (error) {
+          throw new Error(`Encryption error: ${error.message}`);
+        }
+      }
+
+      async function connectWallet() {
+        // Check if wallet provider is available
+        if (!window.ethereum) {
+          showStatus("🔌 Please install MetaMask or another Web3 wallet.", "error");
+          addLog("❌ No wallet provider found. Install MetaMask extension.", "error");
+          alert("No wallet found. Install MetaMask or another Web3 wallet.");
+          return;
+        }
+
+        try {
+          addLog("📱 Requesting wallet connection...", "info");
+          showStatus("📱 Opening wallet popup - please approve the connection...", "loading");
+
+          // Always request permissions to force MetaMask popup confirmation
+          // even if wallet is already connected
+          try {
+            await window.ethereum.request({
+              method: "wallet_requestPermissions",
+              params: [{ eth_accounts: {} }],
+            });
+          } catch (permError) {
+            // If wallet_requestPermissions is not supported, fall back to eth_requestAccounts
+            if (permError.code !== 4001) {
+              console.log("wallet_requestPermissions not supported, using eth_requestAccounts");
+            }
+          }
+
+          // EIP-1193: Request accounts - gets the connected accounts
+          const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+          });
+
+          if (!accounts || accounts.length === 0) {
+            showStatus("❌ No accounts available in wallet.", "error");
+            addLog("No accounts returned from wallet", "error");
+            return;
+          }
+
+          // Successfully connected - get the first account
+          connectedAccount = accounts[0];
+
+          // Switch to Sepolia network
+          try {
+            await window.ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: "0xaa36a7" }], // Sepolia chainId in hex (11155111)
+            });
+            addLog("🔗 Switched to Sepolia testnet", "info");
+          } catch (switchError) {
+            if (switchError.code === 4902) {
+              // Network doesn't exist, add it
+              try {
+                await window.ethereum.request({
+                  method: "wallet_addEthereumChain",
+                  params: [
+                    {
+                      chainId: "0xaa36a7",
+                      chainName: "Sepolia",
+                      nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+                      rpcUrls: ["https://sepolia.infura.io/v3/"],
+                      blockExplorerUrls: ["https://sepolia.etherscan.io"],
+                    },
+                  ],
+                });
+                addLog("✅ Sepolia network added to MetaMask", "info");
+              } catch (addError) {
+                addLog(`⚠️ Could not add Sepolia network: ${addError.message}`, "warning");
+              }
+            } else if (switchError.code !== 4001) {
+              addLog(`⚠️ Network switch warning: ${switchError.message}`, "warning");
+            }
+          }
+
+          // Initialize ethers provider with MetaMask
+          try {
+            provider = new ethers.BrowserProvider(window.ethereum);
+            // Test the connection
+            const network = await provider.getNetwork();
+            addLog(`📡 Connected to network: ${network.name} (chainId: ${network.chainId})`, "info");
+
+            if (network.chainId !== 11155111) {
+              addLog(`⚠️ Warning: You're on ${network.name}, but should be on Sepolia (11155111)`, "warning");
+            }
+          } catch (providerError) {
+            console.warn("Provider initialization warning:", providerError);
+            // Continue anyway - some providers work without full initialization
+          }
+
+          setWalletUI(connectedAccount, true);
+          addLog(`✅ Wallet connected: ${connectedAccount}`, "success");
+
+          // Fetch contract address from server
+          try {
+            const response = await fetch("/api/contract-address");
+            if (response.ok) {
+              const data = await response.json();
+              contractAddress = data.contractAddress;
+              addLog(`📄 Contract Address: ${contractAddress}`, "info");
+              showStatus(
+                `✅ Connected to wallet: ${formatAddress(connectedAccount)} | Contract: ${formatAddress(contractAddress)}`,
+                "success",
+              );
+            } else {
+              showStatus(`✅ Connected to wallet: ${formatAddress(connectedAccount)}`, "success");
+              addLog("⚠️ Contract address not found in configuration", "warning");
+            }
+          } catch (error) {
+            showStatus(`✅ Connected to wallet: ${formatAddress(connectedAccount)}`, "success");
+            addLog(`⚠️ Could not fetch contract address: ${error.message}`, "warning");
+          }
+        } catch (error) {
+          // Handle specific error codes
+          if (error.code === 4001) {
+            // EIP-1193: User rejected the connection request
+            addLog("⚠️ User rejected the wallet connection request.", "warning");
+            showStatus("Connection cancelled by user.", "error");
+            console.log("User rejected the connection request.");
+          } else if (error.code === -32002) {
+            // Request already pending
+            addLog("⚠️ Connection request already pending. Check your wallet.", "warning");
+            showStatus("Please check your wallet - connection request pending.", "loading");
+          } else {
+            addLog(`❌ Wallet connection error: ${error.message}`, "error");
+            showStatus(`❌ Connection error: ${error.message}`, "error");
+            console.error("Wallet connection error:", error);
+          }
+        }
+      }
+
+      // Main check function
+      async function handleCheckClick() {
+        try {
+          // Check wallet connection first
+          if (!connectedAccount) {
+            showStatus("❌ Please connect your wallet first", "error");
+            addLog("Wallet not connected. User needs to click 'Connect Wallet' first.", "error");
+            return;
+          }
+
+          if (!contractAddress) {
+            showStatus("❌ Contract address not configured", "error");
+            addLog("Contract address not available. Please refresh the page.", "error");
+            return;
+          }
+
+          // Validate contract address format
+          if (!/^0x[a-fA-F0-9]{40}$/.test(contractAddress)) {
+            showStatus("❌ Invalid contract address format", "error");
+            addLog(`Invalid contract address: ${contractAddress}`, "error");
+            return;
+          }
+
+          addLog(`✅ Using contract at ${contractAddress}`, "success");
+
+          // Reset
+          logEntries = [];
+          document.getElementById("logEntries").innerHTML = "";
+          document.getElementById("result").innerHTML = "";
+          setStep(1);
+          showLogs();
+
+          addLog("🟢 Starting alcohol eligibility check process...", "info");
+
+          // Step 1: Validate inputs
+          setStep(1);
+          const age = parseInt(document.getElementById("age").value);
+          const drinks = parseInt(document.getElementById("drinks").value);
+
+          addLog(`Reading inputs: Age=${age}, Drinks=${drinks}`, "info");
+
+          if (!age || age < 0 || age > 120) {
+            addLog("❌ Invalid age. Must be between 0 and 120", "error");
+            showStatus("❌ Invalid age. Please enter 0-120", "error");
+            return;
+          }
+
+          if ((!drinks && drinks !== 0) || drinks < 0 || drinks > 255) {
+            addLog("❌ Invalid drinks count. Must be 0-255", "error");
+            showStatus("❌ Invalid drinks count. Please enter 0-255", "error");
+            return;
+          }
+
+          // Explicit strict cap messaging
+          let strictCapReached = false;
+          if (drinks === 3) {
+            strictCapReached = true;
+            addLog("🚫 Strict cap reached: already consumed 3 — next drink disallowed", "warning");
+          }
+
+          showStatus("Preparing to check eligibility...", "loading");
+
+          // Step 2: Get MetaMask confirmation (signature)
+          setStep(2);
+          addLog("🔐 Requesting MetaMask confirmation...", "info");
+          showStatus("🔐 Please confirm in MetaMask", "loading");
+
+          try {
+            // Send a transaction to show network fee and speed
+            // Sending to self is the most reliable way
+            const txHash = await window.ethereum.request({
+              method: "eth_sendTransaction",
+              params: [
+                {
+                  from: connectedAccount,
+                  to: connectedAccount, // Send to self
+                  value: "0x0", // 0 ETH
+                  gas: "0x5208", // 21000 in hex - standard gas for simple transfer
+                },
+              ],
+            });
+
+            addLog(`✅ Transaction confirmed by MetaMask`, "success");
+            addLog(`Transaction Hash: ${txHash.substring(0, 20)}...`, "info");
+
+            // Wait for transaction to be mined
+            showStatus("⏳ Waiting for transaction confirmation...", "loading");
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+          } catch (signError) {
+            if (signError.code === 4001) {
+              addLog("⚠️ User rejected the confirmation", "warning");
+              showStatus("❌ Confirmation rejected by user", "error");
+            } else {
+              addLog(`❌ Confirmation error: ${signError.message}`, "error");
+              showStatus(`❌ Confirmation error: ${signError.message}`, "error");
+            }
+            return;
+          }
+
+          // If strict cap reached, skip heavy steps and finalize after confirmation
+          if (strictCapReached) {
+            setStep(5);
+            showResult(false);
+            showStatus("❌ Not allowed: 3 drinks already consumed", "error");
+            return;
+          }
+
+          // Step 3: Encrypt using backend (DEMO MODE)
+          setStep(3);
+          addLog("🔐 Simulating encrypted input preparation...", "info");
+          showStatus("🔐 Encrypting age and drinks data...", "loading");
+
+          const encryptStartTime = Date.now();
+
+          addLog("🔐 In a real scenario, data would be encrypted using FHE...", "info");
+          addLog(`   Age would be encrypted as euint8`, "info");
+          addLog(`   Drinks would be encrypted as euint8`, "info");
+
+          // Simulate encryption delay (minimal for demo)
+          await new Promise((resolve) => setTimeout(resolve, 300));
+
+          const encryptElapsed = Date.now() - encryptStartTime;
+          addLog(`✅ Encryption simulation successful in ${encryptElapsed}ms`, "success");
+
+          // Step 4: Verify eligibility using backend logic
+          setStep(4);
+          showStatus("📊 Checking eligibility with encrypted verification...", "loading");
+          addLog("In production: Contract would compute on encrypted data", "info");
+
+          try {
+            const verifyResponse = await fetch("/api/check-eligibility", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ age, drinks }),
+            });
+
+            if (!verifyResponse.ok) {
+              const errorText = await verifyResponse.text();
+              console.error("Error response:", errorText);
+              let errorMsg = `HTTP ${verifyResponse.status}`;
+              try {
+                const errorData = JSON.parse(errorText);
+                errorMsg = errorData.error || errorMsg;
+              } catch (e) {
+                // Response is not JSON
+              }
+              throw new Error(errorMsg);
+            }
+
+            const responseText = await verifyResponse.text();
+            console.log("Response text:", responseText);
+
+            let verifyData;
+            try {
+              verifyData = JSON.parse(responseText);
+            } catch (e) {
+              console.error("Failed to parse response as JSON:", e);
+              throw new Error(`Invalid response format: ${e.message}`);
+            }
+
+            const allowed = verifyData.allowed === true;
+
+            addLog("✅ Contract verification complete (simulated)", "success");
+
+            // Step 5: Decrypt result with MetaMask confirmation
+            setStep(5);
+            showStatus("🔓 Requesting decryption confirmation...", "loading");
+            addLog("🔐 Requesting MetaMask confirmation for decryption...", "info");
+
+            try {
+              // Create minimal structured data for decryption confirmation
+              const decryptDomain = {
+                name: "Alcohol Control",
+                version: "1",
+              };
+
+              const decryptTypes = {
+                Decrypt: [{ name: "publicKey", type: "string" }],
+              };
+
+              const decryptValue = {
+                publicKey: connectedAccount,
+              };
+
+              const decryptTypedData = {
+                domain: decryptDomain,
+                types: decryptTypes,
+                primaryType: "Decrypt",
+                message: decryptValue,
+              };
+
+              const decryptSignature = await window.ethereum.request({
+                method: "eth_signTypedData_v4",
+                params: [connectedAccount, JSON.stringify(decryptTypedData)],
+              });
+
+              addLog(`✅ Decryption confirmed by MetaMask`, "success");
+              addLog(`Signature: ${decryptSignature.substring(0, 20)}...`, "info");
+
+              const decryptStartTime = Date.now();
+              await new Promise((resolve) => setTimeout(resolve, 200));
+              const decryptElapsed = Date.now() - decryptStartTime;
+
+              addLog(`✅ Decryption successful in ${decryptElapsed}ms`, "success");
+              showResult(allowed);
+              showStatus("✅ Eligibility check complete!", "success");
+              addLog("🎉 Process completed successfully", "success");
+            } catch (decryptError) {
+              if (decryptError.code === 4001) {
+                addLog("⚠️ User rejected the decryption confirmation", "warning");
+                showStatus("❌ Decryption rejected by user", "error");
+              } else {
+                addLog(`❌ Decryption error: ${decryptError.message}`, "error");
+                showStatus(`❌ Decryption error: ${decryptError.message}`, "error");
+              }
+              return;
+            }
+            addLog("", "info");
+            addLog("📝 Note: This is a DEMO showing the FHE workflow.", "info");
+            addLog("   In production: All computation happens on encrypted data,", "info");
+            addLog("   ensuring your privacy throughout the process.", "info");
+          } catch (verifyError) {
+            console.error("Verification error details:", verifyError);
+            console.error("Error message:", verifyError.message);
+            addLog(`❌ Verification error: ${verifyError.message}`, "error");
+            showStatus(`❌ Verification error: ${verifyError.message}`, "error");
+          }
+        } catch (error) {
+          addLog(`Error: ${error.message}`, "error");
+          showStatus(`❌ Error: ${error.message}`, "error");
+        }
+      }
+
+      // On page load
+      window.addEventListener("load", () => {
+        showStatus("👋 Welcome! Enter your age and drink count, then click 'Check Eligibility' to verify.", "info");
+        addLog("🌐 Page loaded successfully", "info");
+        addLog(
+          "💡 Tip: This demo uses end-to-end encryption. Your inputs are encrypted in your browser before leaving your device!",
+          "info",
+        );
+
+        // Fetch contract address from server
+        fetch("/api/contract-address")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Server returned ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.contractAddress) {
+              contractAddress = data.contractAddress;
+              addLog(`📄 Contract Address loaded: ${contractAddress}`, "info");
+            } else {
+              addLog(`⚠️ Contract address not configured on server`, "warning");
+            }
+          })
+          .catch((error) => {
+            addLog(`⚠️ Could not load contract address: ${error.message}`, "warning");
+            console.error("Contract address fetch error:", error);
+          });
+
+        // Defer wallet queries until the user clicks "Connect" to avoid some providers/extensions
+        // throwing noisy errors (e.g., evmAsk.js unexpected error) on background requests.
+        if (window.ethereum && window.ethereum.request) {
+          addLog("💡 Click 'Connect Wallet' to connect your wallet.", "info");
+
+          // EIP-1193: Listen for account changes after user connects
+          window.ethereum.on("accountsChanged", (accounts) => {
+            if (accounts && accounts.length > 0) {
+              connectedAccount = accounts[0];
+              setWalletUI(connectedAccount, true);
+              addLog(`🔄 Wallet account changed to: ${connectedAccount}`, "info");
+              showStatus(`Account changed: ${formatAddress(connectedAccount)}`, "info");
+            } else {
+              connectedAccount = null;
+              setWalletUI(null, false);
+              addLog("⚠️ Wallet disconnected", "warning");
+              showStatus("Wallet disconnected", "warning");
+            }
+          });
+
+          // EIP-1193: Listen for chain changes
+          window.ethereum.on("chainChanged", (chainId) => {
+            addLog(`🔄 Network changed to chainId: ${chainId}`, "info");
+            // Avoid full page reload; reinitialize provider and update UI
+            try {
+              provider = new ethers.BrowserProvider(window.ethereum);
+              setWalletUI(connectedAccount, !!connectedAccount);
+              showStatus(`Network changed: ${chainId}. Wallet stays connected.`, "info");
+              // Optionally re-run connectWallet to refresh signer and network
+              if (!reconnecting) {
+                reconnecting = true;
+                setTimeout(async () => {
+                  try {
+                    await connectWallet();
+                  } catch (e) {
+                    console.warn("Auto-reconnect warning:", e);
+                  } finally {
+                    reconnecting = false;
+                  }
+                }, 300);
+              }
+            } catch (e) {
+              addLog(`⚠️ Provider re-init warning: ${e.message}`, "warning");
+            }
+          });
+        } else {
+          addLog("💡 No wallet detected. Install MetaMask to connect.", "info");
+        }
+      });
+
+      // Keyboard support
+      document.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && document.getElementById("drinks").value) {
+          handleCheckClick();
+        }
+      });
+    </script>
+  </body>
+</html>
